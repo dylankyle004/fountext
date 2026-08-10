@@ -1,0 +1,132 @@
+import { Extension, markInputRule, markPasteRule, Node } from '@tiptap/core'
+import { Italic, starInputRegex } from '@tiptap/extension-italic'
+import { Underline } from '@tiptap/extension-underline'
+
+//!
+export const Action = Node.create({
+    name: 'action'
+
+})
+
+//><
+export const CenteredText = Node.create({
+    name: 'centeredText'
+
+})
+
+//@
+export const Character = Node.create({
+    name: 'character'
+
+})
+
+export const Dialogue = Node.create({
+    name: 'dialogue'
+
+})
+
+//^ after Second Character
+export const DualDialogue = Node.create({
+    name: 'dualDialogue'
+
+})
+
+//~, Should Render Italic with / on either end (Fountain Syntax is annoyingly vague on this)
+export const Lyric = Italic.extend({
+    name: 'lyric',
+
+    addInputRules() {
+        return [
+            markInputRule({
+                find: /^\~[^~]+$/,
+                type: this.type
+            })
+        ]
+    },
+
+    addPasteRules() {
+        return [
+            markPasteRule({
+                find: /^\~[^~]+$/,
+                type: this.type
+            })
+        ]
+    }
+})
+
+//===
+export const PageBreak = Node.create({
+    name: 'pageBreak'
+
+})
+
+//. (Scene Numbers After are Alphanumerics surrounded by #)
+export const SceneHeading = Node.create({
+    name: 'sceneHeading'
+
+})
+
+//>
+export const Transition = Node.create({
+    name: 'transition'
+
+})
+
+//Remove Underline Markdown from Italic to match Fountain Syntax
+export const FountainItalic = Italic.extend({
+    
+    addInputRules() {
+        return [
+            markInputRule({
+                find: starInputRegex,
+                type: this.type
+            })
+        ]
+    },
+
+    addPasteRules() {
+        return [
+            markPasteRule({
+                find: starInputRegex,
+                type: this.type
+            })
+        ]
+    }
+})
+
+//Change Underline Markdown to match Fountain Syntax
+export const FountainUnderline = Underline.extend({
+    markdownTokenizer: {
+    name: 'underline',
+    level: 'inline',
+    start(src) {
+      return src.indexOf('__')
+    },
+    tokenize(src, _tokens, lexer) {
+      const rule = /^(\_\_)([\s\S]+?)(\_\_)/
+      const match = rule.exec(src)
+
+      if (!match) {
+        return undefined
+      }
+
+      const innerContent = match[2].trim()
+
+      return {
+        type: 'underline',
+        raw: match[0],
+        text: innerContent,
+        tokens: lexer.inlineTokens(innerContent),
+      }
+    },
+  }
+})
+
+
+
+
+
+const Fountain = Extension.create({
+    name: 'fountain',
+
+})
