@@ -51,6 +51,14 @@ export const Lyric = Italic.extend({
                 type: this.type
             })
         ]
+    },
+
+    //Enclose Lyrics in /
+    markdownOptions: {
+        htmlReopen: {
+            open: '<em>/',
+            close: '/</em>',
+        },
     }
 })
 
