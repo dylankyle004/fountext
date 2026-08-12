@@ -138,6 +138,7 @@ const Footnotes = Node.create({
 					for (const del of deletions) {
 						tr.delete(del.pos, del.pos + del.size)
 					}
+					tr.setMeta('addToHistory', false)
 					return tr
 				},
 			}),
