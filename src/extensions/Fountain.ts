@@ -1,9 +1,10 @@
 import { Extension, markInputRule, markPasteRule, Node } from '@tiptap/core'
 import { Italic, starInputRegex } from '@tiptap/extension-italic'
-import { Underline } from '@tiptap/extension-underline'
+import Paragraph from '@tiptap/extension-paragraph'
+import Underline from '@tiptap/extension-underline'
 
 //!
-export const Action = Node.create({
+export const Action = Paragraph.extend({
     name: 'action'
 
 })
