@@ -73,8 +73,37 @@ export const PageBreak = Node.create({
 
 //. (Scene Numbers After are Alphanumerics surrounded by #)
 export const SceneHeading = Node.create({
-    name: 'sceneHeading'
+    name: 'sceneHeading',
 
+    markdownTokenizer: {
+        name: 'sceneHeading',
+        level: 'block',
+
+        start: src => {
+            return src.indexOf('.')
+        },
+
+        tokenize: (src, tokens, lexer) => {
+
+            const match = /^.([^a-z0-9]{3,})$/.exec(src)
+
+            if (!match) {
+                return undefined
+            }
+
+            return {
+                type: 'sceneHeading',
+                raw: match[0],
+                text: match[1],
+                tokens: lexer.inlineTokens(match[1])
+            }
+        }
+
+    },
+
+    parseMarkdown: (token, helpers) => {
+        return helpers.applyMark('sceneHeading', helpers.parseInline(token.tokens || []))
+    }
 })
 
 //>
