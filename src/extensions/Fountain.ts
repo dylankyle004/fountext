@@ -1,6 +1,7 @@
 import { Extension, markInputRule, markPasteRule, Node } from '@tiptap/core'
 import { Italic, starInputRegex } from '@tiptap/extension-italic'
 import Paragraph from '@tiptap/extension-paragraph'
+import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 
 //!
@@ -14,6 +15,17 @@ export const CenteredText = Node.create({
     name: 'centeredText'
 
 })
+
+/*
+
+    TextAlign.configure({
+        defaultAlignment: 'center',
+    })
+
+
+
+
+*/
 
 //@
 export const Character = Node.create({
@@ -109,6 +121,7 @@ export const SceneHeading = Node.create({
 //>
 export const Transition = Node.create({
     
+
     name: 'transition',
 
     markdownTokenizer: {
@@ -139,8 +152,11 @@ export const Transition = Node.create({
 
     parseMarkdown: (token, helpers) => {
         return helpers.applyMark('transition', helpers.parseInline(token.tokens || []))
-    }
+    },
 
+    TextAlign.configure({
+        defaultAlignment: 'right',
+    })
 })
 
 //Remove Underline Markdown from Italic to match Fountain Syntax
