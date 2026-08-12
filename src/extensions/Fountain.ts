@@ -39,7 +39,7 @@ export const Lyric = Italic.extend({
     addInputRules() {
         return [
             markInputRule({
-                find: /^\~[^~]+$/,
+                find: /^\~[^]+?$/,
                 type: this.type
             })
         ]
@@ -48,7 +48,7 @@ export const Lyric = Italic.extend({
     addPasteRules() {
         return [
             markPasteRule({
-                find: /^\~[^~]+$/,
+                find: /^\~[^]+?$/,
                 type: this.type
             })
         ]
