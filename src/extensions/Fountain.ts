@@ -65,8 +65,10 @@ export const Lyric = Italic.extend({
 
 //===
 export const PageBreak = Node.create({
-    name: 'pageBreak'
-
+    name: 'pageBreak',
+    renderHTML() {
+        return ['br', { class: 'page-break' }]
+    }
 })
 
 //. (Scene Numbers After are Alphanumerics surrounded by #)
@@ -77,7 +79,38 @@ export const SceneHeading = Node.create({
 
 //>
 export const Transition = Node.create({
-    name: 'transition'
+    
+    name: 'transition',
+
+    markdownTokenizer: {
+        name: 'transition',
+        level: 'block',
+
+        start: src => {
+            return src.indexOf('>')
+        },
+
+        tokenize: (src, tokens, lexer) => {
+
+            const match = /^>([^<]+?)$/.exec(src)
+
+            if (!match) {
+                return undefined
+            }
+
+            return {
+                type: 'transition',
+                raw: match[0],
+                text: match[1],
+                tokens: lexer.inlineTokens(match[1])
+            }
+        }
+
+    },
+
+    parseMarkdown: (token, helpers) => {
+        return helpers.applyMark('transition', helpers.parseInline(token.tokens || []))
+    }
 
 })
 
@@ -132,6 +165,7 @@ export const FountainUnderline = Underline.extend({
 })
 
 
+//editor.setFontFamily('Courier Prime')
 
 
 
