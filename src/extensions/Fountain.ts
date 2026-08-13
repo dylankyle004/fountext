@@ -11,18 +11,70 @@ export const Action = Paragraph.extend({
 
 //><
 export const CenteredText = Node.create({
-    name: 'centeredText'
+    name: 'centeredText',
 
+    markdownTokenizer: {
+        name: 'centeredText',
+        level: 'block',
+
+        start: src => {
+            return src.indexOf(">")
+        },
+
+        tokenize: (src, _tokens, lexer) => {
+
+            const match = /^>([^]+?)^<$/.exec(src)
+
+            if (!match) {
+                return undefined
+            }
+
+            return {
+                type: 'centeredText',
+                raw: match[0],
+                text: match[1],
+                tokens: lexer.inlineTokens(match[1])
+            }
+        }
+    }
 })
 
 //@
 export const Character = Node.create({
     name: 'character'
 
+    
+
 })
 
 export const Dialogue = Node.create({
-    name: 'dialogue'
+    name: 'dialogue',
+
+     markdownTokenizer: {
+        name: 'dialogue',
+        level: 'block',
+
+        start: src => {
+            return src.indexOf("@")
+        },
+
+        tokenize: (src, _tokens, lexer) => {
+
+            const match = /^@([^]+?)\n([^]+?)$/.exec(src)
+
+            if (!match) {
+                return undefined
+            }
+
+            return {
+                type: 'dialogue',
+                raw: match[0],
+                character: match[1],
+                dialogue: match[2],
+                tokens: lexer.blockTokens(match[1] + "\n" + match[2])
+            }
+        }
+    }
 
 })
 
@@ -39,7 +91,7 @@ export const Lyric = Italic.extend({
     addInputRules() {
         return [
             markInputRule({
-                find: /^\~[^]+?$/,
+                find: /^\~([^]+?)/,
                 type: this.type
             })
         ]
@@ -48,7 +100,7 @@ export const Lyric = Italic.extend({
     addPasteRules() {
         return [
             markPasteRule({
-                find: /^\~[^]+?$/,
+                find: /^\~([^]+?)$/,
                 type: this.type
             })
         ]
