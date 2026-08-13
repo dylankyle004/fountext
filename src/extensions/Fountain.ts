@@ -1,6 +1,7 @@
 import { Extension, markInputRule, markPasteRule, Node } from '@tiptap/core'
 import { Italic, starInputRegex } from '@tiptap/extension-italic'
 import Paragraph from '@tiptap/extension-paragraph'
+import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 
 //!
@@ -38,6 +39,17 @@ export const CenteredText = Node.create({
         }
     }
 })
+
+/*
+
+    TextAlign.configure({
+        defaultAlignment: 'center',
+    })
+
+
+
+
+*/
 
 //@
 export const Character = Node.create({
@@ -117,20 +129,86 @@ export const Lyric = Italic.extend({
 
 //===
 export const PageBreak = Node.create({
-    name: 'pageBreak'
-
+    name: 'pageBreak',
+    renderHTML() {
+        return ['br', { class: 'page-break' }]
+    }
 })
 
 //. (Scene Numbers After are Alphanumerics surrounded by #)
 export const SceneHeading = Node.create({
-    name: 'sceneHeading'
+    name: 'sceneHeading',
 
+    markdownTokenizer: {
+        name: 'sceneHeading',
+        level: 'block',
+
+        start: src => {
+            return src.indexOf('.')
+        },
+
+        tokenize: (src, tokens, lexer) => {
+
+            const match = /^.([^a-z0-9]{3,})$/.exec(src)
+
+            if (!match) {
+                return undefined
+            }
+
+            return {
+                type: 'sceneHeading',
+                raw: match[0],
+                text: match[1],
+                tokens: lexer.inlineTokens(match[1])
+            }
+        }
+
+    },
+
+    parseMarkdown: (token, helpers) => {
+        return helpers.applyMark('sceneHeading', helpers.parseInline(token.tokens || []))
+    }
 })
 
 //>
 export const Transition = Node.create({
-    name: 'transition'
+    
 
+    name: 'transition',
+
+    markdownTokenizer: {
+        name: 'transition',
+        level: 'block',
+
+        start: src => {
+            return src.indexOf('>')
+        },
+
+        tokenize: (src, tokens, lexer) => {
+
+            const match = /^>([^<]+?)$/.exec(src)
+
+            if (!match) {
+                return undefined
+            }
+
+            return {
+                type: 'transition',
+                raw: match[0],
+                text: match[1],
+                tokens: lexer.inlineTokens(match[1])
+            }
+        }
+
+    },
+
+    parseMarkdown: (token, helpers) => {
+        return helpers.applyMark('transition', helpers.parseInline(token.tokens || []))
+    },
+
+    TextAlign.configure({
+        defaultAlignment: 'right',
+    })
 })
 
 //Remove Underline Markdown from Italic to match Fountain Syntax
@@ -184,6 +262,7 @@ export const FountainUnderline = Underline.extend({
 })
 
 
+//editor.setFontFamily('Courier Prime')
 
 
 
