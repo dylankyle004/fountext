@@ -1,7 +1,6 @@
 import { Extension, markInputRule, markPasteRule, Node } from '@tiptap/core'
 import { Italic, starInputRegex } from '@tiptap/extension-italic'
 import Paragraph from '@tiptap/extension-paragraph'
-import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 
 //!
@@ -175,6 +174,8 @@ export const Transition = Node.create({
     
 
     name: 'transition',
+    group: 'block',
+    content: 'inline*',
 
     markdownTokenizer: {
         name: 'transition',
@@ -203,12 +204,16 @@ export const Transition = Node.create({
     },
 
     parseMarkdown: (token, helpers) => {
-        return helpers.applyMark('transition', helpers.parseInline(token.tokens || []))
+        return helpers.createNode('transition', helpers.parseInline(token.tokens || []))
     },
 
-    TextAlign.configure({
-        defaultAlignment: 'right',
-    })
+    renderHTML() {
+        return ['div', { class: 'transition', style: 'text-align: right;'}]
+    },
+
+    parseHTML() {
+        return [{tag: 'div.transition'}]
+    }
 })
 
 //Remove Underline Markdown from Italic to match Fountain Syntax
